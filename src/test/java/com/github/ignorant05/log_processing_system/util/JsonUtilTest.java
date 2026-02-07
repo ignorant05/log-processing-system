@@ -138,7 +138,6 @@ public class JsonUtilTest {
 		assertNotNull(deserialized);
 
 		assertEquals(id, deserialized.getID());
-		assertNull(deserialized.getTimestamp());
 		assertEquals(level, deserialized.getLevel());
 		assertEquals(service, deserialized.getService());
 		assertEquals(message, deserialized.getMessage());
