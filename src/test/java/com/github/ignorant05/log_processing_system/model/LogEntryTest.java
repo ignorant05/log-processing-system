@@ -3,6 +3,7 @@ package com.github.ignorant05.log_processing_system.model;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ public class LogEntryTest {
 
 	@Test
 	void shouldCreateLogEntryWithBuilder() {
-		Instant now = Instant.now();
+		Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 		String id = "log-123", level = "WARN", service = "transaction-service", message = "Payment Succeeded",
 				userID = "user-123", ipAddr = "192.168.0.0";
 		int durationMS = 3600;
@@ -41,7 +42,7 @@ public class LogEntryTest {
 
 	@Test
 	void shouldCreateLogEntryWithConstructor() {
-		Instant now = Instant.now();
+		Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 		String id = "log-123", level = "INFO", service = "transaction-service", message = "Payment Succeeded",
 				userID = "user-123", ipAddr = "192.168.0.0";
 		int durationMS = 3600;
@@ -60,7 +61,7 @@ public class LogEntryTest {
 
 	@Test
 	void shouldSetAndGetFields() {
-		Instant now = Instant.now();
+		Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 		String id = "log-123", level = "INFO", service = "transaction-service", message = "Payment Succeeded",
 				userID = "user-123", ipAddr = "192.168.0.0";
 		int durationMS = 3600;
@@ -88,7 +89,7 @@ public class LogEntryTest {
 
 	@Test
 	void shouldImplementEqualsAndHashCode() {
-		Instant now = Instant.now();
+		Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 		String id_1 = "log-123", level_1 = "INFO", service_1 = "transaction-service", message_1 = "Payment Succeeded",
 				userID_1 = "user-123", ipAddr_1 = "192.168.0.0";
 		int durationMS_1 = 3600;
