@@ -6,7 +6,7 @@ JAVA = java
 MAVEN = mvn
 
 
-all: install | build | test | lint | fmt 
+all: install build test lint fmt 
 	@echo "All tasks completed"
 
 install: 
