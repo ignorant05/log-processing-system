@@ -31,8 +31,12 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /** LogCLI */
-@Command(name = "klog", mixinStandardHelpOptions = true, version = "0.1.0", description = "Kafka log processing CLI tool", subcommands = {
-    GenerateCommand.class, ConsumeCommand.class, Topic.class })
+@Command(
+    name = "klog",
+    mixinStandardHelpOptions = true,
+    version = "0.1.0",
+    description = "Kafka log processing CLI tool",
+    subcommands = {GenerateCommand.class, ConsumeCommand.class, Topic.class})
 public class LogCLI implements Runnable {
 
   @Override
@@ -52,24 +56,38 @@ class GenerateCommand implements Callable<Integer> {
 
   public static final int DEFAULT_WAITING_TIME_IN_MILLISECONDS = 2000;
 
-  @Option(names = { "-b",
-      "--bootstrap-servers" }, defaultValue = "localhost:9095", description = "Kafka bootstrap servers")
+  @Option(
+      names = {"-b", "--bootstrap-servers"},
+      defaultValue = "localhost:9095",
+      description = "Kafka bootstrap servers")
   private String bootstrapServers;
 
-  @Option(names = { "-t", "--topic" }, defaultValue = "my-logs", description = "Kafka topic")
+  @Option(
+      names = {"-t", "--topic"},
+      defaultValue = "my-logs",
+      description = "Kafka topic")
   private String topic;
 
-  @Option(names = { "-i",
-      "--interval" }, defaultValue = "1000", description = "Interval between logs in \"Milliseconds\"")
+  @Option(
+      names = {"-i", "--interval"},
+      defaultValue = "1000",
+      description = "Interval between logs in \"Milliseconds\"")
   private long interval;
 
-  @Option(names = { "-c", "--count" }, defaultValue = "0", description = "Number of logs to generate (0 is infinite)")
+  @Option(
+      names = {"-c", "--count"},
+      defaultValue = "0",
+      description = "Number of logs to generate (0 is infinite)")
   private int count;
 
-  @Option(names = { "-r", "--rate" }, description = "Number of logs per second (overrides \"count\")")
+  @Option(
+      names = {"-r", "--rate"},
+      description = "Number of logs per second (overrides \"count\")")
   private Integer rate;
 
-  @Option(names = { "-s", "--sync" }, description = "Use synchronous sending mode (default is \"Asynchronous mode\")")
+  @Option(
+      names = {"-s", "--sync"},
+      description = "Use synchronous sending mode (default is \"Asynchronous mode\")")
   private boolean isSync;
 
   @Override
@@ -94,10 +112,8 @@ class GenerateCommand implements Callable<Integer> {
         LogEntry logEntry = LogGenerator.generateRandomLog();
 
         try {
-          if (isSync)
-            producer.sendSync(logEntry);
-          else
-            producer.sendAsync(logEntry);
+          if (isSync) producer.sendSync(logEntry);
+          else producer.sendAsync(logEntry);
 
           generated++;
           if (generated % 10 == 0) {
@@ -139,17 +155,27 @@ class GenerateCommand implements Callable<Integer> {
 
 @Command(name = "consume", description = "Consume and display logs from Kafka")
 class ConsumeCommand implements Callable<Integer> {
-  @Option(names = { "-b",
-      "--bootstrap-servers" }, defaultValue = "localhost:9095", description = "Kafka bootstrap servers")
+  @Option(
+      names = {"-b", "--bootstrap-servers"},
+      defaultValue = "localhost:9095",
+      description = "Kafka bootstrap servers")
   private String bootstrapServers;
 
-  @Option(names = { "-t", "--topic" }, defaultValue = "my-logs", description = "Kafka topic")
+  @Option(
+      names = {"-t", "--topic"},
+      defaultValue = "my-logs",
+      description = "Kafka topic")
   private String topic;
 
-  @Option(names = { "-g", "--group-id" }, defaultValue = "we-consumers", description = "Consumer Group ID")
+  @Option(
+      names = {"-g", "--group-id"},
+      defaultValue = "we-consumers",
+      description = "Consumer Group ID")
   private String groupID;
 
-  @Option(names = { "--from-beginning" }, description = "Reading from the begging of the topic")
+  @Option(
+      names = {"--from-beginning"},
+      description = "Reading from the begging of the topic")
   private boolean fromBeginning;
 
   @Override
@@ -177,23 +203,35 @@ class ConsumeCommand implements Callable<Integer> {
 
 @Command(name = "topic", description = "Kafka topic operations")
 class Topic implements Callable<Integer> {
-  @Option(names = { "-b",
-      "--bootstrap-servers" }, defaultValue = "localhost:9095", description = "Kafka bootstrap servers")
+  @Option(
+      names = {"-b", "--bootstrap-servers"},
+      defaultValue = "localhost:9095",
+      description = "Kafka bootstrap servers")
   private String bootstrapServers;
 
-  @Option(names = { "-n", "--name" }, defaultValue = "my-topic", description = "Target topic name")
+  @Option(
+      names = {"-n", "--name"},
+      defaultValue = "my-topic",
+      description = "Target topic name")
   private String topicName;
 
-  @Option(names = { "-p",
-      "--partitions" }, defaultValue = "1", description = "Target topic partitions (default is \"1\"; one topic contains at least one partition)")
+  @Option(
+      names = {"-p", "--partitions"},
+      defaultValue = "1",
+      description =
+          "Target topic partitions (default is \"1\"; one topic contains at least one partition)")
   private int partitions;
 
-  @Option(names = { "-r",
-      "--replications" }, defaultValue = "1", description = "How manay replications should exist for a partition (default is \"1\"")
+  @Option(
+      names = {"-r", "--replications"},
+      defaultValue = "1",
+      description = "How manay replications should exist for a partition (default is \"1\"")
   private short replications;
 
-  @Option(names = {
-      "--timeout" }, defaultValue = "30", description = "Operation timeout in seconds (default: ${DEFAULT-VALUE})")
+  @Option(
+      names = {"--timeout"},
+      defaultValue = "30",
+      description = "Operation timeout in seconds (default: ${DEFAULT-VALUE})")
   private int timeout;
 
   @Parameters(index = "0", description = "Action: create, list, describe, delete")
@@ -309,8 +347,7 @@ class Topic implements Callable<Integer> {
       String topicName = topicsList.get(i);
       if (topicName.startsWith("__"))
         System.out.printf("|| %2d. %s (internal)%n", i + 1, topicName);
-      else
-        System.out.printf("|| %2d. %s%n", i + 1, topicName);
+      else System.out.printf("|| %2d. %s%n", i + 1, topicName);
     }
 
     System.out.println("├─────────────────────────────────────────────────┤");
@@ -324,7 +361,8 @@ class Topic implements Callable<Integer> {
 
     DescribeTopicsResult result = admin.describeTopics(Collections.singletonList(topicName));
 
-    TopicDescription description = result.topicNameValues().get(topicName).get(timeout, TimeUnit.SECONDS);
+    TopicDescription description =
+        result.topicNameValues().get(topicName).get(timeout, TimeUnit.SECONDS);
 
     System.out.println("\nTopic Details:");
     System.out.println("┌─────────────────────────────────────────────────┐");
