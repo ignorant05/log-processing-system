@@ -45,10 +45,6 @@ public class LogConsumer implements AutoCloseable {
   }
 
   public void consume() {
-    System.out.println("\u001B[31mRED TEST\u001B[0m");
-    System.out.println("\u001B[32mGREEN TEST\u001B[0m");
-    System.out.println("\u001B[33mYELLOW TEST\u001B[0m");
-    System.out.flush();
     consumer.subscribe(Collections.singleton(topic));
 
     try {
@@ -99,27 +95,26 @@ public class LogConsumer implements AutoCloseable {
     String color = getLevelColor(logEntry.getLevel());
     String timestamp = logEntry.getTimestamp().toString().substring(11, 23);
 
-    String prettyOutput =
-        color
-            + "["
-            + timestamp
-            + "]"
-            + "\u001B[0m"
-            + " \u001B[35m"
-            + String.format("%-20s", logEntry.getService())
-            + "\u001B[0m"
-            + " "
-            + color
-            + String.format("%-7s", logEntry.getLevel())
-            + "\u001B[0m"
-            + " \u001B[36m"
-            + logEntry.getMessage()
-            + "\u001B[0m"
-            + " (p:"
-            + record.partition()
-            + ", o:"
-            + record.offset()
-            + ")";
+    String prettyOutput = color
+        + "["
+        + timestamp
+        + "]"
+        + "\u001B[0m"
+        + " \u001B[35m"
+        + String.format("%-20s", logEntry.getService())
+        + "\u001B[0m"
+        + " "
+        + color
+        + String.format("%-7s", logEntry.getLevel())
+        + "\u001B[0m"
+        + " \u001B[36m"
+        + logEntry.getMessage()
+        + "\u001B[0m"
+        + " (p:"
+        + record.partition()
+        + ", o:"
+        + record.offset()
+        + ")";
 
     System.out.println(prettyOutput);
   }
