@@ -88,6 +88,7 @@
 	</dependencies>
 
 	<build>
+	    <finalName>klog</finalName>
 	    <plugins> 
 		<plugin>
 		    <groupId>org.apache.maven.plugins</groupId>
@@ -100,26 +101,28 @@
 		    <version>3.1.0</version>
 		</plugin>
 		<plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>3.4.1</version>
-            <executions>
-                <execution>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>shade</goal>
-                    </goals>
-                    <configuration>
-                        <transformers>
-                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                <mainClass>com/github/ignorant05/log_processing_system/cli/LogCLI</mainClass>
-                            </transformer>
-                        </transformers>
-                        <createDependencyReducedPom>false</createDependencyReducedPom>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-shade-plugin</artifactId>
+		    <version>3.4.1</version>
+		    <executions>
+			<execution>
+			    <phase>package</phase>
+			    <goals>
+				<goal>shade</goal>
+			    </goals>
+			    <configuration>
+				<shadedArtifactAttached>false</shadedArtifactAttached>
+				<shadedClassifierName>shaded</shadedClassifierName>
+				<transformers>
+				    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+					<mainClass>com/github/ignorant05/log_processing_system/cli/LogCLI</mainClass>
+				    </transformer>
+				</transformers>
+				<createDependencyReducedPom>false</createDependencyReducedPom>
+			    </configuration>
+			</execution>
+		    </executions>
+		</plugin>
 		<plugin>
 		    <groupId>org.apache.maven.plugins</groupId>
 		    <artifactId>maven-checkstyle-plugin</artifactId>

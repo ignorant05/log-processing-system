@@ -5,18 +5,17 @@ JAR_FILE = $(APP_NAME).jar
 JAVA = java
 MAVEN = mvn
 
-
 all: install build test lint fmt 
 	@echo "All tasks completed"
 
 install: 
 	@echo "Resolving dependencies..."
-	$(MAVEN) clean install
+	$(MAVEN) clean install -DskipTests
 	@echo "dependencies resolved"
 
 build:
 	@echo "Building ..."
-	$(MAVEN) clean package
+	$(MAVEN) clean package -DskipTests
 	@echo "Built Successfully"
 
 run: build
@@ -49,6 +48,7 @@ test:
 
 help:
 	@echo "Makefile commands:"
+	@echo "  make all	 - Runs all the necessary commands below"
 	@echo "  make install- Resolve all dependencies (pom.xml file)"
 	@echo "  make build  - Build the application"
 	@echo "  make run    - Run the application"
