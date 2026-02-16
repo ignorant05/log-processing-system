@@ -16,14 +16,19 @@ RUN mvn clean package -DskipTests
 # ==========================
 # ===== Runtime Stage ======
 # ==========================
-FROM eclipse-temurin:17-jre-alpine AS runner  
+FROM eclipse-temurin:17-jre AS runner
 
-RUN  apk add --no-cache dumb-init
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	dumb-init \
+	&& rm -rf /var/lib/apt/lists/*
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+COPY --from=builder --chown=appuser:appgroup /app/target/klog.jar /klog.jar 
 
-COPY --from=builder --chown=appuser:appgroup /app/target/klog.jar app.jar 
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod 755 /docker-entrypoint.sh && \
+	chown appuser:appgroup /docker-entrypoint.sh
 
 USER appuser
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
