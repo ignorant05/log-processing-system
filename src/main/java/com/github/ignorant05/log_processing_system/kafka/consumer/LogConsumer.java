@@ -22,8 +22,9 @@ public class LogConsumer implements AutoCloseable {
   private final AtomicLong messagesConsumed = new AtomicLong(0);
   private final AtomicLong messagesFailed = new AtomicLong(0);
   private volatile boolean isRunning = true;
+  private volatile boolean fromBeginning = true;
 
-  public LogConsumer(String bootstrapServers, String groupID, String topic) {
+  public LogConsumer(String bootstrapServers, String groupID, String topic, boolean fromBeginning) {
     Properties props = new Properties();
     props.setProperty("bootstrap.servers", bootstrapServers);
     props.setProperty("group.id", groupID);
@@ -40,6 +41,7 @@ public class LogConsumer implements AutoCloseable {
     AnsiConsole.systemInstall();
     this.consumer = new KafkaConsumer<>(props);
     this.topic = topic;
+    this.fromBeginning = fromBeginning;
 
     AnsiConsole.systemInstall();
   }
@@ -48,6 +50,12 @@ public class LogConsumer implements AutoCloseable {
     consumer.subscribe(Collections.singleton(topic));
 
     try {
+      if (fromBeginning) {
+        consumer.poll(Duration.ofMillis(100));
+        consumer.seekToBeginning(consumer.assignment());
+        System.out.println("Seeking to beginning of all partitions");
+      }
+
       while (isRunning) {
         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
@@ -95,27 +103,26 @@ public class LogConsumer implements AutoCloseable {
     String color = getLevelColor(logEntry.getLevel());
     String timestamp = logEntry.getTimestamp().toString().substring(11, 23);
 
-    String prettyOutput =
-        color
-            + "["
-            + timestamp
-            + "]"
-            + "\u001B[0m"
-            + " \u001B[35m"
-            + String.format("%-20s", logEntry.getService())
-            + "\u001B[0m"
-            + " "
-            + color
-            + String.format("%-7s", logEntry.getLevel())
-            + "\u001B[0m"
-            + " \u001B[36m"
-            + logEntry.getMessage()
-            + "\u001B[0m"
-            + " (p:"
-            + record.partition()
-            + ", o:"
-            + record.offset()
-            + ")";
+    String prettyOutput = color
+        + "["
+        + timestamp
+        + "]"
+        + "\u001B[0m"
+        + " \u001B[35m"
+        + String.format("%-20s", logEntry.getService())
+        + "\u001B[0m"
+        + " "
+        + color
+        + String.format("%-7s", logEntry.getLevel())
+        + "\u001B[0m"
+        + " \u001B[36m"
+        + logEntry.getMessage()
+        + "\u001B[0m"
+        + " (p:"
+        + record.partition()
+        + ", o:"
+        + record.offset()
+        + ")";
 
     System.out.println(prettyOutput);
   }
