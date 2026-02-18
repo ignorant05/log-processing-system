@@ -103,26 +103,27 @@ public class LogConsumer implements AutoCloseable {
     String color = getLevelColor(logEntry.getLevel());
     String timestamp = logEntry.getTimestamp().toString().substring(11, 23);
 
-    String prettyOutput = color
-        + "["
-        + timestamp
-        + "]"
-        + "\u001B[0m"
-        + " \u001B[35m"
-        + String.format("%-20s", logEntry.getService())
-        + "\u001B[0m"
-        + " "
-        + color
-        + String.format("%-7s", logEntry.getLevel())
-        + "\u001B[0m"
-        + " \u001B[36m"
-        + logEntry.getMessage()
-        + "\u001B[0m"
-        + " (p:"
-        + record.partition()
-        + ", o:"
-        + record.offset()
-        + ")";
+    String prettyOutput =
+        color
+            + "["
+            + timestamp
+            + "]"
+            + "\u001B[0m"
+            + " \u001B[35m"
+            + String.format("%-20s", logEntry.getService())
+            + "\u001B[0m"
+            + " "
+            + color
+            + String.format("%-7s", logEntry.getLevel())
+            + "\u001B[0m"
+            + " \u001B[36m"
+            + logEntry.getMessage()
+            + "\u001B[0m"
+            + " (p:"
+            + record.partition()
+            + ", o:"
+            + record.offset()
+            + ")";
 
     System.out.println(prettyOutput);
   }
