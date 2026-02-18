@@ -1,15 +1,18 @@
 package com.github.ignorant05.log_processing_system.cli;
 
+import com.github.ignorant05.log_processing_system.cli.commands.ConsumeCommand;
+import com.github.ignorant05.log_processing_system.cli.commands.GenerateCommand;
+import com.github.ignorant05.log_processing_system.cli.commands.TopicCommand;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import com.github.ignorant05.log_processing_system.cli.commands.GenerateCommand;
-import com.github.ignorant05.log_processing_system.cli.commands.ConsumeCommand;
-import com.github.ignorant05.log_processing_system.cli.commands.TopicCommand;
-
 /** LogCLI */
-@Command(name = "klog", mixinStandardHelpOptions = true, version = "0.1.0", description = "Kafka log processing CLI tool", subcommands = {
-    GenerateCommand.class, ConsumeCommand.class, TopicCommand.class })
+@Command(
+    name = "klog",
+    mixinStandardHelpOptions = true,
+    version = "0.1.0",
+    description = "Kafka log processing CLI tool",
+    subcommands = {GenerateCommand.class, ConsumeCommand.class, TopicCommand.class})
 public class LogCLI implements Runnable {
 
   @Override
