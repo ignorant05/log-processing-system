@@ -6,9 +6,9 @@ labels: []
 assignees: []
 ---
 
-**Priority:** Low| **Milestone:** v0.3.0
-
 > Update the **Priority** and the **Milestone** as you see convenient, and remove this line before submitting. 
+
+**Priority:** Low | **Milestone:** v0.1.0
 
 ## Describe the issue 
 A clear and concise description of what the issue is.
