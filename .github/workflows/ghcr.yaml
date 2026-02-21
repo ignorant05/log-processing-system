@@ -13,7 +13,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: klog
+  IMAGE_NAME: ignorant05/klog
 
 jobs:
   build-and-push:
