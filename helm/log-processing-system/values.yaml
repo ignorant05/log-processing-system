@@ -1,0 +1,91 @@
+image:
+  repository: ghcr.io/ignorant05/log-processing-system
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Command the CLI container runs on startup.
+# Override to run a specific command, e.g. ["generate", "-t", "logs", "-c", "1000"]
+# Use ["sleep", "infinity"] to keep the pod alive for exec-based usage.
+command: ["sleep", "infinity"]
+
+# Number of CLI pod replicas
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+kafka:
+  image:
+    registry: docker.io
+    repository: confluentinc/cp-kafka
+    tag: "7.4.0"
+    pullPolicy: Never
+
+  # Set to false if you are connecting to an external Kafka cluster
+  enabled: true
+
+  # Bitnami Kafka chart overrides
+  # Full values reference: https://github.com/bitnami/charts/tree/main/bitnami/kafka
+  replicaCount: 1
+
+  listeners:
+    client:
+      protocol: PLAINTEXT
+
+  # Disable auth for local/dev deployments
+  auth:
+    clientProtocol: plaintext
+    interBrokerProtocol: plaintext
+
+  zookeeper:
+    enabled: false # Bitnami Kafka 26+ uses KRaft by default
+
+  persistence:
+    enabled: true
+    size: 8Gi
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+externalKafka:
+  bootstrapServers: "my-external-kafka:9092"
+
+topics:
+  - name: logs
+    partitions: 4
+    replicationFactor: 1
+
+healthCheck:
+  timeoutSeconds: 5
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
