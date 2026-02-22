@@ -186,12 +186,40 @@ The script uses `health` as a readiness probe — it retries until the broker re
 
 ```
 log-processing-system
+├── .github/ 
+│   ├── ISSUE_TEMPLATE
+│   │   ├── bug_report.md
+│   │   ├── config.yaml
+│   │   ├── custom_issue.md
+│   │   ├── documentation.md
+│   │   └── feature_request.md
+│   ├── pull_request_template.md
+│   └── workflows
+│       ├── ci.yaml
+│       └── ghcr.yaml
+├── .gitignore 
 ├── CONTRIBUTING.md
 ├── docker-compose.yaml
 ├── docker-entrypoint.sh
 ├── Dockerfile
+├── helm
+│   └── log-processing-system
+│       ├── Chart.lock
+│       ├── charts
+│       │   └── kafka-26.11.4.tgz
+│       ├── Chart.yaml
+│       ├── templates
+│       │   ├── configmap.yaml
+│       │   ├── deployment.yaml
+│       │   ├── _helpers.tpl
+│       │   ├── NOTES.txt
+│       │   └── serviceaccount.yaml
+│       └── values.yaml
 ├── HELP.md
 ├── install.sh
+├── k8s
+│   └── confluent-kafka.yaml
+├── LICENSE
 ├── makefile
 ├── mvnw
 ├── mvnw.cmd
@@ -202,7 +230,7 @@ log-processing-system
 │   │   ├── java
 │   │   │   └── com
 │   │   │       └── github
-│   │   │           └── ignorant06
+│   │   │           └── ignorant05
 │   │   │               └── log_processing_system
 │   │   │                   ├── check
 │   │   │                   │   ├── ConsumerCheck.java
@@ -249,7 +277,7 @@ log-processing-system
 │       └── java
 │           └── com
 │               └── github
-│                   └── ignorant06
+│                   └── ignorant05
 │                       └── log_processing_system
 │                           ├── model
 │                           │   └── LogEntryTest.java
@@ -258,98 +286,6 @@ log-processing-system
 │                           └── util
 │                               ├── JsonUtilTest.java
 │                               └── MetricsRegistryTest.java
-├── target
-│   ├── checkstyle-cachefile
-│   ├── checkstyle-checker.xml
-│   ├── checkstyle-result.xml
-│   ├── classes
-│   │   ├── application.yaml
-│   │   └── com
-│   │       └── github
-│   │           └── ignorant06
-│   │               └── log_processing_system
-│   │                   ├── check
-│   │                   │   ├── ConsumerCheck.class
-│   │                   │   ├── HealthCheckResult.class
-│   │                   │   ├── KafkaConnectionCheck.class
-│   │                   │   ├── ProducerCheck.class
-│   │                   │   └── TopicAvailabilityCheck.class
-│   │                   ├── cli
-│   │                   │   ├── commands
-│   │                   │   │   ├── ConsumeCommand.class
-│   │                   │   │   ├── GenerateCommand.class
-│   │                   │   │   ├── HealthCommand$2.class
-│   │                   │   │   ├── HealthCommand.class
-│   │                   │   │   ├── MetricsCommand.class
-│   │                   │   │   └── TopicCommand.class
-│   │                   │   └── LogCLI.class
-│   │                   ├── config
-│   │                   │   └── KafkaConfig.class
-│   │                   ├── generator
-│   │                   │   └── LogGenerator.class
-│   │                   ├── kafka
-│   │                   │   ├── consumer
-│   │                   │   │   └── LogConsumer.class
-│   │                   │   └── producer
-│   │                   │       └── LogProducer.class
-│   │                   ├── model
-│   │                   │   ├── HealthCheck.class
-│   │                   │   ├── HealthStatus.class
-│   │                   │   ├── LogEntry$Builder.class
-│   │                   │   ├── LogEntry.class
-│   │                   │   └── TopicAction.class
-│   │                   ├── service
-│   │                   │   ├── ConsumeService.class
-│   │                   │   ├── GenerateService.class
-│   │                   │   ├── HealthService$HealthReport.class
-│   │                   │   ├── HealthService.class
-│   │                   │   ├── TopicService$2.class
-│   │                   │   └── TopicService.class
-│   │                   └── util
-│   │                       ├── JsonUtil.class
-│   │                       ├── MetricsRegistry.class
-│   │                       └── MetricsSnapShot.class
-│   ├── generated-sources
-│   │   └── annotations
-│   ├── generated-test-sources
-│   │   └── test-annotations
-│   ├── klog.jar
-│   ├── maven-archiver
-│   │   └── pom.properties
-│   ├── maven-status
-│   │   └── maven-compiler-plugin
-│   │       ├── compile
-│   │       │   └── default-compile
-│   │       │       ├── createdFiles.lst
-│   │       │       └── inputFiles.lst
-│   │       └── testCompile
-│   │           └── default-testCompile
-│   │               ├── createdFiles.lst
-│   │               └── inputFiles.lst
-│   ├── original-klog.jar
-│   ├── spotless-index
-│   ├── surefire-reports
-│   │   ├── com.github.ignorant06.log_processing_system.model.LogEntryTest.txt
-│   │   ├── com.github.ignorant06.log_processing_system.service.HealthServiceTest.txt
-│   │   ├── com.github.ignorant06.log_processing_system.util.JsonUtilTest.txt
-│   │   ├── com.github.ignorant06.log_processing_system.util.MetricsRegistryTest.txt
-│   │   ├── TEST-com.github.ignorant06.log_processing_system.model.LogEntryTest.xml
-│   │   ├── TEST-com.github.ignorant06.log_processing_system.service.HealthServiceTest.xml
-│   │   ├── TEST-com.github.ignorant06.log_processing_system.util.JsonUtilTest.xml
-│   │   └── TEST-com.github.ignorant06.log_processing_system.util.MetricsRegistryTest.xml
-│   └── test-classes
-│       └── com
-│           └── github
-│               └── ignorant06
-│                   └── log_processing_system
-│                       ├── model
-│                       │   └── LogEntryTest.class
-│                       ├── service
-│                       │   ├── HealthServiceTest$2.class
-│                       │   └── HealthServiceTest.class
-│                       └── util
-│                           ├── JsonUtilTest.class
-│                           └── MetricsRegistryTest.class
 └── test.sh
 ```
 
