@@ -1,0 +1,12 @@
+apiVersion: v2
+name: log-processing-system
+description: Kafka log processing CLI tool
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: kafka
+    version: "26.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: kafka.enabled

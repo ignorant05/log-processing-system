@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "log-processing-system.fullname" . }}
+  labels:
+    {{- include "log-processing-system.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "log-processing-system.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "log-processing-system.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "log-processing-system.serviceAccountName" . }}
+
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      initContainers:
+        # 1. Wait for Kafka to be healthy before doing anything else
+        - name: wait-for-kafka
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for Kafka to be healthy..."
+              until java -jar /app/log-processing-system.jar health \
+                    -b "$KAFKA_BOOTSTRAP_SERVERS" \
+                    -t "$KAFKA_TOPICS" \
+                    --timeout "$KAFKA_HEALTH_TIMEOUT_SECONDS" > /dev/null 2>&1; do
+                echo "  Kafka not ready — retrying in 5s..."
+                sleep 5
+              done
+              echo "Kafka is ready."
+          envFrom:
+            - configMapRef:
+                name: {{ include "log-processing-system.fullname" . }}-config
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+        # 2. Create required topics 
+        - name: create-topics
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              {{- range .Values.topics }}
+              echo "Creating topic '{{ .name }}'..."
+              java -jar /app/log-processing-system.jar topic create \
+                -b "$KAFKA_BOOTSTRAP_SERVERS" \
+                -n "{{ .name }}" \
+                -p {{ .partitions }} || echo "Topic '{{ .name }}' may already exist — continuing."
+              {{- end }}
+              echo "Topic initialisation complete."
+          envFrom:
+            - configMapRef:
+                name: {{ include "log-processing-system.fullname" . }}-config
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      containers:
+        - name: klog 
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: {{ toJson .Values.command }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "log-processing-system.fullname" . }}-config
+
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          livenessProbe:
+            exec:
+              command:
+                - java
+                - -jar
+                - /app/log-processing-system.jar
+                - health
+                - -b
+                - $(KAFKA_BOOTSTRAP_SERVERS)
+                - -t
+                - $(KAFKA_TOPICS)
+                - --timeout
+                - $(KAFKA_HEALTH_TIMEOUT_SECONDS)
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 10
+
+          readinessProbe:
+            exec:
+              command:
+                - java
+                - -jar
+                - /app/log-processing-system.jar
+                - health
+                - -b
+                - $(KAFKA_BOOTSTRAP_SERVERS)
+                - -t
+                - $(KAFKA_TOPICS)
+                - --timeout
+                - $(KAFKA_HEALTH_TIMEOUT_SECONDS)
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 2
+            timeoutSeconds: 10
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

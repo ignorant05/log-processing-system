@@ -1,0 +1,45 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  log-processing-system {{ .Chart.AppVersion }} deployed successfully
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Kafka bootstrap servers:
+  {{ include "log-processing-system.kafkaBootstrapServers" . }}
+
+Topics pre-created:
+  {{- range .Values.topics }}
+  • {{ .name }} ({{ .partitions }} partitions, replication factor {{ .replicationFactor }})
+  {{- end }}
+
+── Run commands ────────────────────────────────────────
+
+Exec into the CLI pod:
+
+  kubectl exec -it deploy/{{ include "log-processing-system.fullname" . }} -- \
+    java -jar /app/klog.jar health
+
+Check health:
+
+  kubectl exec deploy/{{ include "log-processing-system.fullname" . }} -- \
+    java -jar /app/klog.jar health \
+      -b {{ include "log-processing-system.kafkaBootstrapServers" . }} \
+      -t {{ (index .Values.topics 0).name }} \
+      --json
+
+Generate test logs:
+
+  kubectl exec deploy/{{ include "log-processing-system.fullname" . }} -- \
+    java -jar /app/klog.jar generate \
+      -b {{ include "log-processing-system.kafkaBootstrapServers" . }} \
+      -t {{ (index .Values.topics 0).name }} \
+      -c 100 -i 500
+
+View metrics:
+
+  kubectl exec deploy/{{ include "log-processing-system.fullname" . }} -- \
+    java -jar /app/klog.jar metrics
+
+── Logs ────────────────────────────────────────────────
+
+  kubectl logs deploy/{{ include "log-processing-system.fullname" . }}
+  kubectl logs deploy/{{ include "log-processing-system.fullname" . }} -c wait-for-kafka
+  kubectl logs deploy/{{ include "log-processing-system.fullname" . }} -c create-topics
